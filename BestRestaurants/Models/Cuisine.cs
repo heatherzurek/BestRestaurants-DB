@@ -8,7 +8,7 @@ namespace BestRestaurant.Models
   {
     public string Type { get; set; }
     public int Id { get; set; }
-
+    public List<Restaurant> Restaurants { get; set; }
 
     public static List<Cuisine> cuisineList = new List<Cuisine> {};
 
@@ -16,6 +16,40 @@ namespace BestRestaurant.Models
     {
       Type = type;
       Id = id;
+      Restaurants = new List<Restaurant> {};
+    }
+
+    public override bool Equals(System.Object otherCuisine)
+    {
+      if (!(otherCuisine is Cuisine))
+      {
+        return false;
+      }
+      else
+      {
+        Cuisine newCuisine = (Cuisine) otherCuisine;
+        bool idEquality = this.Id.Equals(newCuisine.Id);
+        bool nameEquality = this.Type.Equals(newCuisine.Type);
+        return (idEquality && nameEquality);
+      }
+    }
+
+    public void Save()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"INSERT INTO cuisine (type) VALUES (@type);";
+      MySqlParameter type = new MySqlParameter();
+      type.ParameterName = "@type";
+      type.Value = this.Type;
+      cmd.Parameters.Add(type);
+      cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
     }
 
     public static void ClearAll()
@@ -32,79 +66,73 @@ namespace BestRestaurant.Models
       }
     }
 
-    // public override bool Equals(System.Object otherCuisine)
-    // {
-    //   if (!(otherCuisine is Cuisine))
-    //   {
-    //     return false;
-    //   }
-    //   else
-    //   {
-    //     Cuisine newCuisine = (Cuisine) otherCuisine;
-    //     bool descriptionEquality = (this.Type == newCuisine.Type);
-    //     return (descriptionEquality);
-    //   }
-    // }
-
-    public void Save()
+    public static List<Cuisine> GetAll()
     {
+      List<Cuisine> allCuisine = new List<Cuisine> {};
       MySqlConnection conn = DB.Connection();
       conn.Open();
-      var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"INSERT INTO cuisine (type) VALUES (@CuisinesType);";
-      // MySqlParameter name = new MySqlParameter();
-      // name.ParameterType = ;
-      // name.Value = this.Type;
-      //
-      // MySqlParameter address = new MySqlParameter();
-      // address.ParameterType = ;
-      // address.Value = this.Address;
-      //
-      // MySqlParameter phoneNumber = new MySqlParameter();
-      // phoneNumber.ParameterType = "@CuisinesPhoneNumber";
-      // phoneNumber.Value = this.phoneNumber;
+      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT * FROM cuisine;";
+      var rdr = cmd.ExecuteReader() as MySqlDataReader;
 
-      // cmd.Parameters.AddWithValue("@");
-      cmd.Parameters.AddWithValue("@CuisinesType", Type);
-      cmd.ExecuteNonQuery();
-      // more logic will go here
-      Id = (int) cmd.LastInsertedId;
+      while (rdr.Read())
+      {
+        string type = rdr.GetString(0);
+        int id = rdr.GetInt32(1);
+        Cuisine newCuisine = new Cuisine(type, id);
+        allCuisine.Add(newCuisine);
+      }
+
       conn.Close();
       if (conn != null)
       {
         conn.Dispose();
       }
+      return allCuisine;
     }
 
-    public static List<Cuisine> GetAll()
+    public static Cuisine Find(int id)
     {
-      List<Cuisine> allCuisine = new List<Cuisine> {};
-
-
       MySqlConnection conn = DB.Connection();
       conn.Open();
-      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"SELECT * FROM cuisine;";
-      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"SELECT * FROM categories WHERE id = (@searchId);";
 
-    while (rdr.Read())
-    {
-      string type = rdr.GetString(0);
-      int id = rdr.GetInt32(1);
+      MySqlParameter searchId = new MySqlParameter();
+      searchId.ParameterName = "@searchId";
+      searchId.Value = id;
+      cmd.Parameters.Add(searchId);
 
-      Cuisine newCuisine = new Cuisine(type, id);
-      allCuisine.Add(newCuisine);
+      var rdr = cmd.ExecuteReader() as MySqlDataReader;
+      int CuisineId = 0;
+      string CuisineType = "";
+
+      while(rdr.Read())
+      {
+        CuisineType = rdr.GetString(0);
+        CuisineId = rdr.GetInt32(1);
+      }
+      Cuisine newCuisine = new Cuisine(CuisineType, CuisineId);
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return newCuisine;
     }
 
-    conn.Close();
-
-    if (conn != null)
+    public static void DeleteAll()
     {
-      conn.Dispose();
-    }
-
-    return allCuisine;
-
+        MySqlConnection conn = DB.Connection();
+        conn.Open();
+        var cmd = conn.CreateCommand() as MySqlCommand;
+        cmd.CommandText = @"DELETE FROM cuisine;";
+        cmd.ExecuteNonQuery();
+        conn.Close();
+        if (conn != null)
+        {
+            conn.Dispose();
+        }
     }
  }
 }
