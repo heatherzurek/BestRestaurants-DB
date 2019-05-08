@@ -1,0 +1,20 @@
+@using BestRestaurant.Models;
+
+<h1>My Favorite Cuisine</h1>
+<ul>
+
+@if (Model.Count == 0)
+{
+  <p>There are no restaurants here!</p>
+}
+@if(Model.Count != 0)
+{
+  @foreach (Cuisine cuisine in Model)
+  {
+    <li>Cuisine Type: @cuisine.Type</li>
+    <br>
+  }
+}
+
+</ul>
+<a href="/restaurant/new">Add a new restaurant</a>
