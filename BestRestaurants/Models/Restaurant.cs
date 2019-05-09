@@ -13,6 +13,11 @@ namespace BestRestaurant.Models
     public int Id { get; set; }
 
 
+     public Cuisine GetCuisine()
+     {
+       return Cuisine.Find(CuisineId);
+     }
+
     public static List<Restaurant> restList = new List<Restaurant> {};
 
     public Restaurant (string name, string address, string phoneNumber, int cuisineId, int id = 0)

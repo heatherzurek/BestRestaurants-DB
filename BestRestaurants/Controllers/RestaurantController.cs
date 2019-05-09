@@ -8,7 +8,7 @@ namespace BestRestaurant.Controllers
   public class RestaurantController : Controller
   {
 
-    [HttpGet("/restaurant")]
+    [HttpGet("/restaurant/")]
     public ActionResult Index()
     {
       // Animal newAnimal = new Animal();
@@ -16,10 +16,10 @@ namespace BestRestaurant.Controllers
       return View(allRest);
     }
 
-    [HttpGet("/restaurant/new")]
-    public ActionResult New()
+    [HttpGet("/restaurant/{id}/new")]
+    public ActionResult New(int id)
     {
-      return View();
+      return View(Cuisine.Find(id));
     }
 
 
@@ -29,6 +29,17 @@ namespace BestRestaurant.Controllers
       Restaurant myRestaurant = new Restaurant(name, address, phoneNumber, cuisineId);
       myRestaurant.Save();
       return RedirectToAction("Index");
+    }
+
+    [HttpGet("/cuisine/{cuisineId}/restaurant/{restaurantId}")]
+    public ActionResult Show(int cuisineId, int restaurantId)
+    {
+        Restaurant restaurant = Restaurant.Find(restaurantId);
+        Dictionary<string, object> model = new Dictionary<string, object>();
+        Cuisine cuisine = Cuisine.Find(cuisineId);
+        model.Add("restaurant", restaurant);
+        model.Add("cuisine", cuisine);
+        return View(model);
     }
 
     // [HttpGet("/animals/SortByType")]

@@ -6,21 +6,20 @@
   </head>
   <body>
     <h1></h1>
-
+    <h3>Add a new restaurant for this cuisine: <strong>@Model.Type</strong></h3>
     <form action="/restaurant" method="post">
+      <input id="cuisineId" name="cuisineId" type="hidden" value="@Model.Id">
       <label for="name">Add its name:</label>
       <input id="name" name="name" type="text">
       <label for="address">Add its address:</label>
       <input id="address" name="address" type="text">
       <label for="phoneNumber">Add its phoneNumber:</label>
       <input id="phoneNumber" name="phoneNumber" type="text">
-      <label for="cuisine">Add its cuisine:</label>
-      <input id="cuisine" name="cuisine" type="text">
 
       <button type="submit">Add this awesome restaurant</button>
     </form>
 
-    <a href="/restaurant">VIEW RESTAURANTS</a>
+    <a href="/restaurant/@Model.Id">VIEW RESTAURANTS</a>
 
   </body>
 </html>

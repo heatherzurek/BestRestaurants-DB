@@ -11,7 +11,6 @@ namespace BestRestaurant.Controllers
     [HttpGet("/cuisine")]
     public ActionResult Index()
     {
-      // Animal newAnimal = new Animal();
       List<Cuisine> allCuisine = Cuisine.GetAll();
       return View(allCuisine);
     }
@@ -30,6 +29,21 @@ namespace BestRestaurant.Controllers
       myCuisine.Save();
       return RedirectToAction("Index");
     }
+
+    [HttpGet("/cuisine/{id}/restaurant/new")]
+    public ActionResult Show()
+    {
+      // Restaurant newRestaurant = new Restaurant(name, address, phoneNumber, cuisineId);
+      List<Cuisine> allCuisine = Cuisine.GetAll();
+      return View();
+    }
+
+    // [HttpPost("/cuisine/{id}/restaurant")]
+    // public ActionResult New(string name, string address, string phoneNumber, int cuisineId)
+    // {
+    //   Restaurant myRestaurant = new Restaurant(name, address, phoneNumber, cuisineId);
+    //   return RedirectToAction("Index");
+    // }
 
     // [HttpGet("/animals/SortByType")]
     // public ActionResult SortByType()
